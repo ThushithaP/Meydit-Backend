@@ -37,32 +37,7 @@ export default class UsersController {
       .json({ message: "Account Created Successfull" });
   }
 
-  public async login({ auth, request, response }: HttpContextContract) {
-    const data = await request.validate(LoginValidator);
-
-    const user = await User.findBy("email", data.email);
-
-    if (!user) {
-      console.log("Email Not Found");
-    } else {
-      const passwordValid = await Hash.verify(user.password, data.password);
-
-      const token = await auth.use("web").attempt(data.email, data.password);
-
-      if (passwordValid) {
-        try {
-          return { user, token };
-        } catch (error) {
-          console.log(error);
-          return response.status(401).json({ message: "Invalid Credentials" });
-        }
-      } else {
-        console.log("Invalid Password");
-      }
-    }
-  }
-
-  // public async login({ request, response }: HttpContextContract) {
+  // public async login({ auth, request, response }: HttpContextContract) {
   //   const data = await request.validate(LoginValidator);
 
   //   const user = await User.findBy("email", data.email);
@@ -71,9 +46,12 @@ export default class UsersController {
   //     console.log("Email Not Found");
   //   } else {
   //     const passwordValid = await Hash.verify(user.password, data.password);
+
+  //     const token = await auth.use("web").attempt(data.email, data.password);
+
   //     if (passwordValid) {
   //       try {
-  //         return user;
+  //         return { user, token };
   //       } catch (error) {
   //         console.log(error);
   //         return response.status(401).json({ message: "Invalid Credentials" });
@@ -83,6 +61,28 @@ export default class UsersController {
   //     }
   //   }
   // }
+
+  public async login({ request, response }: HttpContextContract) {
+    const data = await request.validate(LoginValidator);
+
+    const user = await User.findBy("email", data.email);
+
+    if (!user) {
+      console.log("Email Not Found");
+    } else {
+      const passwordValid = await Hash.verify(user.password, data.password);
+      if (passwordValid) {
+        try {
+          return user;
+        } catch (error) {
+          console.log(error);
+          return response.status(401).json({ message: "Invalid Credentials" });
+        }
+      } else {
+        console.log("Invalid Password");
+      }
+    }
+  }
 
   // user details by id
   public async UserDetails({ params }: HttpContextContract) {
