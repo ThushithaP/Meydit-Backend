@@ -12,14 +12,6 @@ export default class JobsController {
 
       // Store the images  and get their paths
       const imagePaths: (string | any)[] = [];
-      // for (const image of validatedData.images) {
-      //   const path = `../../assests/orders/${image.clientName}`;
-      //   await image.move("../frontend/meydit/src/assests/orders", {
-      //     name: `${image.clientName}`,
-      //   });
-
-      //   imagePaths.push(path);
-      // }
 
       for (const image of validatedData.images) {
         const path = `/orders/${image.clientName}`;
@@ -100,44 +92,67 @@ export default class JobsController {
 
   // update job
 
-  public async UpdateJob({ params, request, response }: HttpContextContract) {
-    const id = params.jobId;
-    const validatedData = await request.validate(JobValidator);
-    const imagePaths: (string | any)[] = [];
+  public async UpdateJob({ request, response }: HttpContextContract) {
     try {
-      for (const image of validatedData.images) {
-        const path = `/orders/${image.clientName}`;
-        await image.move("../frontend/meydit/public/orders", {
-          name: `${image.clientName}`,
-        });
+      const {
+        id,
+        firstname,
+        lastname,
+        phone_number,
+        email,
+        postcode,
+        street,
+        state,
+        type,
+        budget,
+        description,
+      } = request.only([
+        "id",
+        "firstname",
+        "lastname",
+        "phone_number",
+        "email",
+        "postcode",
+        "street",
+        "state",
+        "type",
+        "budget",
+        "description",
+      ]);
 
-        imagePaths.push(path);
-      }
+      const newJobData = await Database.from("jobs").where("id", id).update({
+        id: id,
+        firstname: firstname,
+        lastname: lastname,
+        phone_number: phone_number,
+        email: email,
+        postcode: postcode,
+        street: street,
+        state: state,
+        type: type,
+        description: description,
+        budget: budget,
+      });
 
-      const data = {
-        firstname: validatedData.firstname,
-        lastname: validatedData.lastname,
-        phone_number: validatedData.phone_number,
-        email: validatedData.email,
-        postcode: validatedData.postcode,
-        street: validatedData.street,
-        state: validatedData.state,
-        type: validatedData.type,
-        description: validatedData.description,
-        budget: validatedData.budget,
-        image_1: imagePaths[0]?.toString(),
-        image_2: imagePaths[1]?.toString(),
-        image_3: imagePaths[2]?.toString(),
-        image_4: imagePaths[3]?.toString(),
-        image_5: imagePaths[4]?.toString(),
-      };
-
-      await Database.from("jobs").where("id", id).update(data);
-
-      return response.created({ message: "Job updated successfully" });
+      return response.status(200).json(newJobData);
     } catch (error) {
       console.log(error);
       return "Error during job update";
+    }
+  }
+
+  // delete job
+  public async JobDeleteById({ params, response }: HttpContextContract) {
+    try {
+      const Jobid = params.id;
+      //delete data from jobs table
+      await Database.from("jobs").where("id", Jobid).delete();
+      return response
+        .status(200)
+        .json({ message: `Job with ID ${Jobid} has been deleted` });
+    } catch (err) {
+      console.log(err);
+      return err;
     }
   }
 }

@@ -33,6 +33,7 @@ Route.get("/jobDetail", "JobsController.jobDetail");
 // Job by id
 Route.get("jobsById/:buyerId", "JobsController.JobDetailsById");
 Route.get("jobsByJobId/:jobId", "JobsController.JobDetailsByJobId");
+Route.delete("jobDelete/:id", "JobsController.JobDeleteById");
 // Quotation
 Route.post("/sendQuote", "QuotationsController.sendQuote");
 Route.get("/countQuote/:jobId", "QuotationsController.countQuote");
@@ -46,7 +47,7 @@ Route.get(
   "AcceptQuotesController.acceptQuoteDetailsByMakerId"
 );
 //update job
-Route.put("updateJob/:id", "JobsController.UpdateJob");
+Route.put("updateJob", "JobsController.UpdateJob");
 // user details by id
 Route.get("/userDetails/:id", "UsersController.UserDetails");
 Route.put("/updateUser", "UsersController.UpdateProfile");
