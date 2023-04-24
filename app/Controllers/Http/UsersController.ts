@@ -99,8 +99,6 @@ export default class UsersController {
   // user info update
 
   public async UpdateProfile({ request, response }: HttpContextContract) {
-    // const id = request.body().id;
-    // const name = request.body().name;
     const { id, name, email, contactNumber } = request.only([
       "id",
       "name",

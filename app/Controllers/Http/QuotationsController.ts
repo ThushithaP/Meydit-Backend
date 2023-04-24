@@ -8,36 +8,40 @@ import QuotationValidator from "App/Validators/QuotationValidator";
 export default class QuotationsController {
   // send quotation
   public async sendQuote({ request, response }: HttpContextContract) {
-    const data = await request.validate(QuotationValidator);
+    try {
+      const data = await request.validate(QuotationValidator);
 
-    const quote = new Quotation();
-    (quote.jobId = data.jobId),
-      (quote.buyerId = data.buyerId),
-      (quote.makerId = data.makerId),
-      (quote.jobType = data.jobType),
-      (quote.coverLetter = data.coverLetter),
-      (quote.price = data.price),
-      (quote.duration = data.duration);
-    await quote.save();
+      const quote = new Quotation();
+      (quote.jobId = data.jobId),
+        (quote.buyerId = data.buyerId),
+        (quote.makerId = data.makerId),
+        (quote.jobType = data.jobType),
+        (quote.coverLetter = data.coverLetter),
+        (quote.price = data.price),
+        (quote.duration = data.duration);
+      await quote.save();
 
-    // send mail
-    const email = data.email;
-    const smtp = process.env.SMTP_USERNAME ? process.env.SMTP_USERNAME : "";
-    await Mail.send((message) => {
-      message
-        .from(smtp)
-        .to(email)
-        .subject("Qutotation Received")
-        .htmlView("emails/quote", {
-          coverLetter: data.coverLetter,
-          price: data.price,
-          duration: data.duration,
-        });
-    });
+      // send mail
+      const email = data.email;
+      const smtp = process.env.SMTP_USERNAME ? process.env.SMTP_USERNAME : "";
+      await Mail.send((message) => {
+        message
+          .from(smtp)
+          .to(email)
+          .subject("Qutotation Received")
+          .htmlView("emails/quote", {
+            coverLetter: data.coverLetter,
+            price: data.price,
+            duration: data.duration,
+          });
+      });
 
-    return response
-      .status(201)
-      .json({ message: "Quaotation send successfully" });
+      return response
+        .status(201)
+        .json({ message: "Quaotation send successfully" });
+    } catch (err) {
+      throw err;
+    }
   }
 
   // count quotation

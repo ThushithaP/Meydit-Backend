@@ -51,7 +51,7 @@ export default class AcceptQuotesController {
       return response.created(confirmQuote);
     } catch (err) {
       console.log(err);
-      return err;
+      throw err;
     }
   }
 
@@ -67,6 +67,7 @@ export default class AcceptQuotesController {
       return response;
     } catch (err) {
       console.log(err);
+      throw err;
     }
   }
 }
